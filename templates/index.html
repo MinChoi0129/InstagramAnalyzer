@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Instagram 분석기</title>
+    <link rel="stylesheet" type=text/css href="{{url_for('static',
+    filename='style.css')}}"/>
+  </head>
+  <body>
+    <h1>Instagram 분석기</h1>
+    <hr />
+    <form method="post" action="/analyze">
+      <div class="center_frame">
+        <div>
+          <h3>팔로워</h3>
+          <textarea name="follower" required></textarea>
+        </div>
+        <div>
+          <h3>팔로잉</h3>
+          <textarea name="following" required></textarea>
+        </div>
+      </div>
+      <div class="center_frame">
+        <input
+          type="text"
+          placeholder="이름을 입력하세요"
+          id="user_name"
+          name="user_name"
+          required
+          oninput="this.value = this.value.replace(/[^a-z0-9]/gi,'')"
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="비밀번호를 설정하세요"
+          required
+          oninput="this.value = this.value.replace(/[^a-z0-9]/gi,'')"
+        />
+      </div>
+      <div class="center_frame">
+        <input style="margin-top: 20px" type="submit" value="분석" required />
+      </div>
+    </form>
+  </body>
+</html>

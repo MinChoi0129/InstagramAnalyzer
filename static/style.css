@@ -1,0 +1,26 @@
+body {
+  color: white;
+  background-color: steelblue;
+}
+
+h1,
+h3 {
+  text-align: center;
+}
+
+.center_frame {
+  display: flex;
+  justify-content: center;
+}
+
+.center_frame textarea {
+  resize: none;
+  width: 400px;
+  height: 300px;
+}
+
+.center_frame input {
+  margin-top: 15px;
+  height: 40px;
+  padding: 10px;
+}
