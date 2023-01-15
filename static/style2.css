@@ -4,24 +4,18 @@ body {
   background-position: center;
 }
 
+p,
 h1,
+h2,
 h3 {
   text-align: center;
 }
 
 .center_frame {
-  display: flex;
   justify-content: center;
+  text-align: center;
 }
 
-textarea {
-  resize: none;
-  width: 400px;
-  height: 300px;
-}
-
-.center_frame input {
-  margin-top: 15px;
-  height: 40px;
-  padding: 10px;
+.show_box {
+  display: inline-block;
 }
