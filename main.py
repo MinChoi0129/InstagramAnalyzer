@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from User import *
 
 app = Flask(__name__)
@@ -15,7 +15,7 @@ def signup():
             UserWriter.writeNewDirectoryAndFiles(req_user_name, req_password)
             return render_template('success_signup.html')
         return render_template('retry_signup.html')
-    return render_template('create_account.html')
+    return render_template('signup.html')
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
@@ -26,9 +26,13 @@ def analyze():
             UserWriter.recordUserConnections(req_user_name, *full_of_follow_users)
             result = UserAnalyzer.analyzeUserConnections(*full_of_follow_users)
             return UserAnalyzer.generateUserAnalyzedHTML(result)
-    except Exception as e:
-        print(e)
-        return render_template('retry_login.html')
+        return redirect(url_for('loginfail')) 
+    except:
+        return redirect(url_for('loginfail')) 
+
+@app.route('/loginfail', methods=['GET'])
+def loginfail():
+    return render_template('retry_login.html')
 
 if __name__ == '__main__':
     app.run(debug=True, port=12345)
