@@ -19,14 +19,14 @@ class UserReader:
             return user_accounts
 
     @staticmethod
-    def getFollowUsers(user_name, time_mode=None, relative_mode=None, full=False):
+    def getFollowUsers(user_name, data=None, time_mode=None, relative_mode=None, full=False):
         f = open(PATH_USER_DB + user_name + '/old_followers.dat', mode = 'r')
         g = open(PATH_USER_DB + user_name + '/old_followings.dat', mode = 'r')
         
         a = {user.strip() for user in f.readlines()}
         b = {user.strip() for user in g.readlines()}
-        c = set(UserReader.getUserList(request.form['followers']))
-        d = set(UserReader.getUserList(request.form['followings']))
+        c = set(UserReader.getUserList(data['followers']))
+        d = set(UserReader.getUserList(data['followings']))
 
         f.close(); g.close()
         

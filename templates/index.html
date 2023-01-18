@@ -1,36 +1,64 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>Instagram 분석기</title>
+    <link rel="stylesheet" type=text/css href="../static/style.css" />
+    <style>
+      a,
+      a:visited,
+      a:hover,
+      a:active {
+        color: inherit;
+        text-decoration: none;
+      }
+    </style>
+  </head>
 
-<head>
-  <title>Instagram 분석기</title>
-  <link rel="stylesheet" type=text/css href="../static/style.css" />
-</head>
-
-<body>
-  <h1>Instagram 분석기</h1>
-  <hr />
-  <form method="post" action="/analyze/users">
-    <div class="center_frame">
-      <div>
-        <h3>팔로워</h3>
-        <textarea name="followers" required></textarea>
+  <body>
+    <h1>Instagram 분석기</h1>
+    <h3>
+      <a
+        style="margin: 20px; color: pink"
+        href="http://instagram.com"
+        target="_blank"
+        >Instagram 접속</a
+      >
+      <a style="margin: 20px; color: pink" href="{{url_for('how_to_use')}}"
+        >사용법</a
+      >
+    </h3>
+    <hr />
+    <form method="post" action="/analyze">
+      <div class="center_frame">
+        <div>
+          <h3>팔로워</h3>
+          <textarea name="followers" required></textarea>
+        </div>
+        <div>
+          <h3>팔로잉</h3>
+          <textarea name="followings" required></textarea>
+        </div>
       </div>
-      <div>
-        <h3>팔로잉</h3>
-        <textarea name="followings" required></textarea>
+      <div class="center_frame">
+        <input
+          type="text"
+          placeholder="아이디를 입력하세요"
+          id="user_name"
+          name="user_name"
+          required
+          oninput="this.value = this.value.replace(/[^a-z0-9]/gi,'')"
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="비밀번호를 입력하세요"
+          required
+          oninput="this.value = this.value.replace(/[^a-z0-9]/gi,'')"
+        />
       </div>
-    </div>
-    <div class="center_frame">
-      <input type="text" placeholder="아이디를 입력하세요(영숫자만 가능)" id="user_name" name="user_name" required
-        oninput="this.value = this.value.replace(/[^a-z0-9]/gi,'')" />
-      <input type="password" name="password" placeholder="비밀번호를 설정하세요" required
-        oninput="this.value = this.value.replace(/[^a-z0-9]/gi,'')" />
-    </div>
-    <div class="center_frame">
-      <input style="margin-top: 20px" type="submit" value="분석" required />
-    </div>
-  </form>
-
-</body>
-
+      <div class="center_frame">
+        <input style="margin-top: 20px" type="submit" value="분석" required />
+      </div>
+    </form>
+  </body>
 </html>
