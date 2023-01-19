@@ -66,6 +66,7 @@ class UserAnalyzer:
     def analyzeUserConnections(old_followers, old_followings, current_followers, current_followings):
         old_bi_follows = old_followers & old_followings # 과거에 한번이라도 맞팔한 적이 있는 유저들
         current_bi_follows = current_followings & current_followers # 지금 맞팔중인 유저들
+        nickname_change_bi_follow = current_bi_follows - old_bi_follows # 아이디 변경한 유저
         un_bi_followed_by_others = old_bi_follows - current_bi_follows # 테스터가 맞팔해제 당하게 한 유저들
         current_uni_follows_by_you = current_followings - current_followers # 지금 테스터만 팔로우 중인 유저들
 
@@ -75,6 +76,7 @@ class UserAnalyzer:
             current_bi_follows, # 지금 맞팔중인 유저들
             un_bi_followed_by_others, # 테스터가 맞팔해제 당하게 한 유저들 or 아이디 변경한 유저
             current_uni_follows_by_you, # 지금 테스터만 팔로우 중인 유저들
+            nickname_change_bi_follow # 아이디 변경한 유저
         ]
     
     @staticmethod
@@ -89,11 +91,17 @@ class UserAnalyzer:
                 if line.startswith('<div class="center_frame">'):
                     txt += f"<h2>팔로워 : {len(result[0])}, 팔로잉 : {len(result[1])}</h2>"
                     txt += f"<h2>맞팔로잉 : {len(result[2])}</h2>"
-                    for user_set in [result[3], result[4]]:
-                        if len(user_set) > 0 and user_set == result[3]: txt += "<h3>맞팔로우 취소한 유저 또는 아이디 변경으로인해 확인해야할 유저 목록</h3>"
-                        elif len(user_set) > 0 and user_set == result[4]: txt += "<h3>고객님만 팔로우 중인 유저 목록</h3>"
+                    for user_set in [result[3], result[5], result[4]]:
+                        if len(user_set) > 0 and user_set == result[3]: 
+                            txt += "<h3>맞팔로우 취소한 유저(※ 주의 ※ : 아이디 변경한 유저일 수 있음)</h3>"
+                            txt += "<div class='show_box' style='border: 4px dotted yellow; width: 400px;'>"
+                        elif len(user_set) > 0 and user_set == result[4]: 
+                            txt += f"<h3>고객님만 팔로우 중인 유저 목록({len(user_set)}명)</h3>"
+                            txt += "<div class='show_box' style='border: 4px dotted yellow; width: 400px;'>"
+                        elif len(user_set) > 0 and user_set == result[5]: 
+                            txt += "<h3>아이디를 변경한 유저 목록(※ 주의 ※ : 이 항목은 이번만 나타남)</h3>"
+                            txt += "<div class='show_box' style='border: 4px dotted yellow; width: 400px;'>"
                         
-                        txt += "<div class='show_box' style='border: 4px dotted yellow; width: 400px;'>"
                         for user in user_set:
                             txt += f'<p><a target="_blank" href="https://www.instagram.com/{user}/">{user}</a></p>'
                         txt += "</div>"

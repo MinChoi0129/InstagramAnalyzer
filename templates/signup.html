@@ -2,30 +2,36 @@
 <html>
   <head>
     <title>회원가입</title>
+    <link rel="stylesheet" type=text/css href="../static/style.css" />
   </head>
 
   <body>
-    <form method="post" action="/signup">
-      <div class="center_frame">
-        <input
-          type="text"
-          placeholder="아이디를 설정하세요"
-          id="user_name"
-          name="user_name"
-          required
-          oninput="this.value = this.value.replace(/[^a-z0-9]/gi,'')"
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="비밀번호를 설정하세요"
-          required
-          oninput="this.value = this.value.replace(/[^a-z0-9]/gi,'')"
-        />
-      </div>
-      <div class="center_frame">
-        <input style="margin-top: 20px" type="submit" value="가입" required />
-      </div>
-    </form>
+    <h1>회원가입</h1>
+    <hr />
+    <div class="how_to_use">
+      <h3>아이디는 고유해야하며 비밀번호는 자유롭게 설정하세요.</h3>
+      <form method="post" action="/signup">
+        <div class="center_frame">
+          <input
+            type="text"
+            placeholder="아이디를 설정하세요"
+            id="user_name"
+            name="user_name"
+            required
+            oninput="this.value = this.value.replace(/[^a-z0-9]/gi,'')"
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="비밀번호를 설정하세요"
+            required
+            oninput="this.value = this.value.replace(/[^a-z0-9]/gi,'')"
+          />
+        </div>
+        <div class="center_frame">
+          <input style="margin-top: 20px" type="submit" value="가입" required />
+        </div>
+      </form>
+    </div>
   </body>
 </html>

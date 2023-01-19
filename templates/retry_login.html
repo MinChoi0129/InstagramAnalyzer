@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+  <head>
+    <title>로그인 실패</title>
+    <link rel="stylesheet" type=text/css href="../static/style.css" />
+  </head>
 
-<head>
-  <title>로그인 실패</title>
-</head>
-
-<body>
-  <p>계정이 존재하지 않거나 비밀번호가 일치하지 않습니다.</p>
-  <a href="{{url_for('signup')}}">회원가입</a>
-  <a href="{{url_for('main')}}">메인으로</a>
-</body>
-
+  <body>
+    <h1>로그인 실패</h1>
+    <hr />
+    <div class="how_to_use">
+      <h2>계정이 존재하지 않거나 비밀번호가 일치하지 않습니다.</h2>
+      <h3><a href="{{url_for('signup')}}">회원가입</a></h3>
+      <h3><a href="{{url_for('main')}}">메인으로</a></h3>
+    </div>
+  </body>
 </html>
