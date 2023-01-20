@@ -88,21 +88,28 @@ class UserAnalyzer:
                 line = f.readline().strip()
                 txt += line
                 if line.startswith('</html>'): break
+
                 if line.startswith('<div class="center_frame">'):
                     txt += f"<h2>팔로워 : {len(result[0])}, 팔로잉 : {len(result[1])}</h2>"
                     txt += f"<h2>맞팔로잉 : {len(result[2])}</h2>"
+
                     for user_set in [result[3], result[5], result[4]]:
-                        if len(user_set) > 0 and user_set == result[3]: 
+                        if user_set and user_set == result[3]: 
                             txt += "<h3>맞팔로우 취소한 유저(※ 주의 ※ : 아이디 변경한 유저일 수 있음)</h3>"
                             txt += "<div class='show_box' style='border: 4px dotted yellow; width: 400px;'>"
-                        elif len(user_set) > 0 and user_set == result[4]: 
+                            for user in user_set:
+                                txt += f'<div><p><a href="https://www.instagram.com/{user}/" target="_blank">{user}</a></p>'
+                                txt += '<button onclick="remove(this)">삭제</button></div>'
+                        elif user_set and user_set == result[4]: 
                             txt += f"<h3>고객님만 팔로우 중인 유저 목록({len(user_set)}명)</h3>"
                             txt += "<div class='show_box' style='border: 4px dotted yellow; width: 400px;'>"
-                        elif len(user_set) > 0 and user_set == result[5]: 
+                            for user in user_set:
+                                txt += f'<p><a target="_blank" href="https://www.instagram.com/{user}/">{user}</a></p>'
+                        elif user_set and user_set == result[5]: 
                             txt += "<h3>아이디를 변경한 유저 목록(※ 주의 ※ : 이 항목은 이번만 나타남)</h3>"
                             txt += "<div class='show_box' style='border: 4px dotted yellow; width: 400px;'>"
-                        
-                        for user in user_set:
-                            txt += f'<p><a target="_blank" href="https://www.instagram.com/{user}/">{user}</a></p>'
+                            for user in user_set:
+                                txt += f'<p><a target="_blank" href="https://www.instagram.com/{user}/">{user}</a></p>'
+
                         txt += "</div>"
             return txt

@@ -2,6 +2,7 @@ body {
   color: white;
   background-image: url("./instagramWallpaper.webp");
   background-position: center;
+  font-size: 120%;
 }
 
 a,
@@ -45,4 +46,10 @@ textarea {
 
 .show_box {
   margin: auto;
+  padding: 15px;
+}
+
+button {
+  margin: auto;
+  display: flex;
 }
