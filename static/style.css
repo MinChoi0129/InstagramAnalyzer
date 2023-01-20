@@ -47,9 +47,11 @@ textarea {
 .show_box {
   margin: auto;
   padding: 15px;
+  border: 4px dotted yellow;
+  width: 400px;
 }
 
-button {
+.showbox > button {
   margin: auto;
   display: flex;
 }
