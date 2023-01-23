@@ -138,6 +138,6 @@ class UserAnalyzer:
                             코드 긴 것 리팩토링
                             불필요 리팩토링 제거
                             삭제버튼 css 재설정
-                            
+                            디렉토리 재 구조화
                             '''
             return txt
