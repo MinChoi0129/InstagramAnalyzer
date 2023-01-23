@@ -1,6 +1,6 @@
 body {
   color: white;
-  background-image: url("./instagramWallpaper.webp");
+  background-image: url("./images/background/instagramWallpaper.webp");
   background-position: center;
   font-size: 120%;
 }
@@ -51,7 +51,7 @@ textarea {
   width: 400px;
 }
 
-.showbox > button {
+.show_box input {
   margin: auto;
-  display: flex;
+  display: block;
 }
