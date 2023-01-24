@@ -1,7 +1,8 @@
 body {
   color: white;
-  background-image: url("./images/background/instagramWallpaper.webp");
+  background-image: url("./images/background/instagramWallpaper.jpg");
   background-position: center;
+  background-size: 4096px 2160px;
   font-size: 120%;
 }
 
@@ -9,7 +10,7 @@ a,
 a:visited,
 a:hover,
 a:active {
-  color: pink;
+  color: rgb(255, 0, 144);
   text-decoration: none;
 }
 
@@ -24,6 +25,9 @@ textarea {
   resize: none;
   width: 400px;
   height: 200px;
+  background-color: rgb(29, 17, 23);
+  color: lightgray;
+  font-size: 120%;
 }
 
 .center_frame {
@@ -35,6 +39,8 @@ textarea {
   margin-top: 15px;
   height: 40px;
   padding: 10px;
+  background-color: rgb(29, 17, 23);
+  color: lightgray;
 }
 
 .how_to_use {
