@@ -1,5 +1,6 @@
 from pathlib import Path
 from os import mkdir
+from difflib import SequenceMatcher
 
 PATH_USER_DB = './static/user_db/'
 HOST, PORT = '0.0.0.0', 12345
@@ -54,28 +55,45 @@ class UserWriter:
 
 class UserAnalyzer:
     @staticmethod
-    def analyzeUserConnections(old_followers, old_followings, current_followers, current_followings):
-        old_bi_follows = old_followers & old_followings # 과거에 한번이라도 맞팔한 적이 있는 유저들
-        current_bi_follows = current_followings & current_followers # 지금 맞팔중인 유저들
-        nickname_change_bi_follow = current_bi_follows - old_bi_follows # 아이디 변경한 유저
-        un_bi_followed_by_others = old_bi_follows - current_bi_follows # 테스터가 맞팔해제 당하게 한 유저들
-        just_unfollowed_by_others = old_followers - current_followers - un_bi_followed_by_others # 상대방 혼자 팔로우 하다가 혼자 팔로우 해제한 유저
-        current_uni_follows_by_you = current_followings - current_followers # 지금 테스터만 팔로우 중인 유저들
+    def getSimilarity(user_list: set[str], target: str) -> tuple[str, float]: 
+        stringHandle = lambda a: ''.join(''.join(a.strip().split('_')).split('.')).lower()
+        answer_bytes = list(bytes(stringHandle(target), 'utf-8'))
+        for input_string in map(stringHandle, user_list):
+            input_bytes = list(bytes(input_string, 'utf-8'))
+            similarity_percent = SequenceMatcher(None, answer_bytes, input_bytes).ratio() * 100
+            if similarity_percent >= 55:
+                return input_string, similarity_percent
+        return None, None
+
+    @staticmethod
+    def analyzeUserConnections(m, n, p, q):
+        old_bi_follows = m & n #  과거 맞팔했던 유저
+        current_bi_follows = p & q #  지금 맞팔중인 유저
+        current_uni_follows_by_you = q - p #  지금 테스터만 팔로우 중인 유저
+
+        nickname_changed = (p | q) - (m | n) #  아이디 변경한 유저
+        new_followers = p - m - nickname_changed # 테스터를 새로 팔로우 하는 유저(초기 분석은 포함하지 않도록 뒤에서 조건 처리 필요)
+        disabled = (m | n) - (p | q) # 계정 비활성화한 유저
+        uni_un_followed_by_others = (m - n) - (p - q) - disabled - nickname_changed #  상대방만 혼자 팔로우 하다가 그 사람 혼자 팔로우 해제한 유저(비활, 아이디 변경은 포함하지 않음)
+        un_bi_followed_by_others = (m & n) - (p & q) - disabled - nickname_changed #  테스터가 맞팔해제 당하게 한 유저들(비활, 아이디 변경은 포함하지 않음)
 
         return [
-            current_followers, # 0 ---- 지금 팔로워들
-            current_followings, # 1 ---- 지금 팔로잉들
-            current_bi_follows, # 2 ---- 지금 맞팔중인 유저들
-            just_unfollowed_by_others, # 3 ---- 상대방만 혼자 팔로우 하다가 그 사람 혼자 팔로우 해제한 유저
-            nickname_change_bi_follow, # 4 ---- 테스터를 새로 팔로우 하거나 아이디 변경한 유저
-            un_bi_followed_by_others, # 5 ---- 테스터가 맞팔해제 당하게 한 유저들 or 아이디 변경한 유저
-            current_uni_follows_by_you, # 6 ---- 지금 테스터만 팔로우 중인 유저들
-            old_followers, # 7 ---- 과거 팔로워들
-            old_followings # 8 ---- 과거 팔로잉들
+            m, # ------------------------------------------  0 과거 팔로워
+            n, # ------------------------------------------  1 과거 팔로잉
+            p, # ------------------------------------------  2 지금 팔로워
+            q, # ------------------------------------------  3 지금 팔로잉
+            old_bi_follows, # -----------------------------  4 과거 맞팔했던 유저
+            current_bi_follows, # -------------------------  5 지금 맞팔중인 유저
+            new_followers, # ------------------------------  6 테스터를 새로 팔로우 하는 유저
+            un_bi_followed_by_others, # -------------------  7 테스터가 맞팔해제 당하게 한 유저들(비활, 아이디 변경은 포함하지 않음)
+            disabled, # -----------------------------------  8 계정 비활성화한 유저
+            uni_un_followed_by_others, # ------------------  9 상대방만 혼자 팔로우 하다가 그 사람 혼자 팔로우 해제한 유저
+            nickname_changed, # --------------------------- 10 아이디 변경한 유저
+            current_uni_follows_by_you, # ----------------- 11 지금 테스터만 팔로우 중인 유저
         ]
     
     @staticmethod
-    def generateUserAnalyzedHTML(req_user_name, result):
+    def generateUserAnalyzedHTML(result):
         txt = ""
         
         with open('./templates/analyzed_result.html', mode='r', encoding='utf-8') as f:
@@ -83,42 +101,59 @@ class UserAnalyzer:
                 line = f.readline().strip()
                 txt += line
                 if line.startswith('</html>'): break
-
                 if line.startswith('<div class="center_frame">'):
+                    txt += f"<h2>팔로워 : {len(result[2])}, 팔로잉 : {len(result[3])}</h2><h2>맞팔로잉 : {len(result[5])}</h2>"
 
-                    txt += f"<h2>팔로워 : {len(result[0])}, 팔로잉 : {len(result[1])}</h2><h2>맞팔로잉 : {len(result[2])}</h2>"
-
-                    for user_set in result[3:]:
-                        if user_set:
-
-                            if user_set == result[4] and not (len(result[7]) == 0 and len(result[8]) == 0):
-                                txt += "<h3>회원님을 새로 팔로우 하거나 아이디를 바꾼 유저 목록<p style='color: orange'>(※주의※ : 이 항목은 이번만 나타남)</p></h3><div class='show_box'>"
-                                for user in user_set: txt += f'<p><a target="_blank" href="https://www.instagram.com/{user}/">{user}</a></p>'
-
-                            elif user_set == result[5]:
-                                txt += "<h3>맞팔로우 취소한 유저(※주의※ : 아이디를 바꾼 유저일 수 있음)</h3><div class='show_box'>"
-                                for user in user_set:
-                                    txt += f'<form method="post" action="/analyze">'
-                                    txt += f'   <p><a href="https://www.instagram.com/{user}/" target="_blank">{user}</a></p>'
-                                    txt += f'   <input type="hidden" name="req_user_name" value="{req_user_name}" />'
-                                    txt += f'   <input type="hidden" name="target_name" value="{user}" />'
-                                    txt += f'   <input type="submit" value="삭제" />'
-                                    txt += f'</form>'
-
-                            elif user_set == result[3]:
-                                txt += "<h3>상대방 혼자 팔로우 하다가 혼자 팔로우 해제한 유저</h3><div class='show_box'>"
-                                for user in user_set:
-                                    txt += f'<form method="post" action="/analyze">'
-                                    txt += f'   <p><a href="https://www.instagram.com/{user}/" target="_blank">{user}</a></p>'
-                                    txt += f'   <input type="hidden" name="req_user_name" value="{req_user_name}" />'
-                                    txt += f'   <input type="hidden" name="target_name" value="{user}" />'
-                                    txt += f'   <input type="submit" value="삭제" />'
-                                    txt += f'</form>'
-
-                            elif user_set == result[6]:
-                                txt += f"<h3>회원님만 팔로우 중인 유저({len(user_set)}명)</h3><div class='show_box'>"
-                                for user in user_set: txt += f'<p><a target="_blank" href="https://www.instagram.com/{user}/">{user}</a></p>'
-                                    
-
-                            txt += "</div>" 
+                    
+                    
+                    if result[6] and (result[0] or result[1]):
+                        txt += f"<h3>회원님을 새로 팔로우하는 유저({len(result[6])})</h3><div class='show_box'>"
+                        for user in result[6]:
+                            txt += f'<p><a target="_blank" href="https://www.instagram.com/{user}/">{user}</a></p>'
+                        txt += "</div>" 
+                    if result[7]:
+                        txt += f"<h3>회원님과의 맞팔로우를 해제한 유저({len(result[7])})</h3><div class='show_box'>"
+                        for user in result[7]:
+                            txt += f'<p><a target="_blank" href="https://www.instagram.com/{user}/">{user}</a></p>'
+                        txt += "</div>" 
+                    if result[8]:
+                        txt += f"<h3>계정을 비활성화 또는 삭제한 유저({len(result[8])})</h3>"
+                        txt += f"<h4>아이디를 변경한 유저일 수 있습니다.</h4><div class='show_box'>"
+                        for user in result[8]:
+                            txt += f'<p><a target="_blank" href="https://www.instagram.com/{user}/">{user}</a></p>'
+                        txt += "</div>" 
+                    if result[9]:
+                        txt += f"<h3>혼자 팔로우하다 혼자 해제한 유저({len(result[9])})</h3><div class='show_box'>"
+                        for user in result[9]:
+                            txt += f'<p><a target="_blank" href="https://www.instagram.com/{user}/">{user}</a></p>'
+                        txt += "</div>" 
+                    if result[10] and (result[0] or result[1]):
+                        txt += f"<h3>인스타그램 아이디를 변경한 유저({len(result[10])})</h3><div class='show_box'>"
+                        for user in result[10]:
+                            txt += f'<p><a target="_blank" href="https://www.instagram.com/{user}/">{user}</a></p>'
+                        txt += "</div>" 
+                    if result[11]:
+                        txt += f"<h3>회원님만 팔로우중인 유저({len(result[11])})</h3><div class='show_box'>"
+                        for user in result[11]:
+                            txt += f'<p><a target="_blank" href="https://www.instagram.com/{user}/">{user}</a></p>'
+                        txt += "</div>" 
+                    
             return txt
+
+
+
+
+
+            # similar_user_name, similarity = UserAnalyzer.getSimilarity(result[4], user)
+            # show_user_name =  + '(이전 아이디 : ' +  + ') - ' + str(similarity) + '%' if similar_user_name else user
+
+            # for user in result[7]:
+            #     txt += f'<form method="post" action="/analyze">'
+            #     txt += f'   <p><a href="https://www.instagram.com/{user}/" target="_blank">{user}</a></p>'
+            #     txt += f'   <input type="hidden" name="req_user_name" value="{req_user_name}" />'
+            #     txt += f'   <input type="hidden" name="target_name" value="{user}" />'
+            #     txt += f'   <input type="submit" value="삭제" />'
+            #     txt += f'</form>'
+
+            # for user in result[]:
+            #     txt += f'<p><a target="_blank" href="https://www.instagram.com/{user}/">{user}</a></p>'

@@ -11,8 +11,8 @@ def removeFromUnfollowList(req_user_name, target_name):
     with open(OLD_F, 'w', encoding='utf-8') as f, open(OLD_G, 'w', encoding='utf-8') as g: f.write(data[0]); g.write(data[1])
     with open(NEW_F, 'r', encoding='utf-8') as f, open(NEW_G, 'r', encoding='utf-8') as g:
         raw_data = {'followers': '\r\n'.join(f.readlines()), 'followings': '\r\n'.join(g.readlines())}
-        analyze_result = A.analyzeUserConnections(*R.getFollowUsers(req_user_name, raw_data))
-        return A.generateUserAnalyzedHTML(req_user_name, analyze_result)
+        full_of_follow_users = R.getFollowUsers(req_user_name, raw_data)
+        return A.generateUserAnalyzedHTML(A.analyzeUserConnections(*full_of_follow_users))
 
 def signupResponse(req_user_name, req_password):
     if req_user_name in R.getUserAccountsDB(): return redirect(url_for('fail', action='signup'))
@@ -51,7 +51,7 @@ def analyze():
             if not checkpw(req_password, db_password): return redirect(url_for('fail', action='login'))
             full_of_follow_users = R.getFollowUsers(req_user_name, request.form)
             W.recordUserConnections(req_user_name, *full_of_follow_users)
-            return A.generateUserAnalyzedHTML(req_user_name, A.analyzeUserConnections(*full_of_follow_users))
+            return A.generateUserAnalyzedHTML(A.analyzeUserConnections(*full_of_follow_users))
         except KeyError: return redirect(url_for('fail', action='login')) 
         except Exception as e: return str(e)
 
