@@ -3,3 +3,4 @@ static/user_db
 static/user_db/user_accounts.csv
 .DS_Store
 static/.DS_Store
+admin.py
