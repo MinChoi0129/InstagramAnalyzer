@@ -2,11 +2,9 @@ FROM python:3
 ENV TZ=Asia/Seoul
 WORKDIR /usr/src
 
-RUN pip install flask
-RUN pip install bcrypt
+RUN pip install flask bcrypt
 
-COPY main.py /usr/src/
-COPY User.py /usr/src/
+COPY main.py User.py /usr/src/
 COPY static /usr/src/static
 COPY templates /usr/src/templates
 
