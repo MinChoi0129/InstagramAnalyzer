@@ -77,7 +77,8 @@ class UserAnalyzer:
         uni_un_followed_by_others = (m - n) - (p - q) - disabled - nickname_changed #  상대방만 혼자 팔로우 하다가 그 사람 혼자 팔로우 해제한 유저(비활, 아이디 변경은 포함하지 않음)
         un_bi_followed_by_others = (m & n) - (p & q) - disabled - nickname_changed #  테스터가 맞팔해제 당하게 한 유저들(비활, 아이디 변경은 포함하지 않음)
 
-        return [
+        
+        return_targets = [
             m, # ------------------------------------------  0 과거 팔로워
             n, # ------------------------------------------  1 과거 팔로잉
             p, # ------------------------------------------  2 지금 팔로워
@@ -91,6 +92,13 @@ class UserAnalyzer:
             nickname_changed, # --------------------------- 10 아이디 변경한 유저
             current_uni_follows_by_you, # ----------------- 11 지금 테스터만 팔로우 중인 유저
         ]
+        
+        for target in return_targets:
+            try: target.remove("")
+            except: continue
+        
+        return return_targets
+            
     
     @staticmethod
     def generateUserAnalyzedHTML(result):
