@@ -17,6 +17,8 @@ def signupResponse(req_user_name, req_password): # CLEAR
     W.addUserIntoDatabase(req_user_name, hashpw(req_password.encode('UTF-8'), gensalt()).hex())
     return redirect(url_for('success', action='signup'))
 
+
+
 # Routers
 @app.route('/')
 def main(): # CLEAR
